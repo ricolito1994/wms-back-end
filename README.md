@@ -6,8 +6,8 @@ set up:
 <li>3.) composer install</li>
 <li>4.) cp .env.example .env</li>
 <li>5.) php artisan key:generate</li>
-<li>6.) php artisan config:cache</li>
-<li>7.) php artisan jwt:secret</li>
+<li>6.) php artisan jwt:secret</li>
+<li>7.) php artisan config:cache</li>
 <li>6.) copy the generated key to .env file</li>
 <li>8.) JWT_SECRET="your_generated_key"</li>
 <li>9.) php artisan serve</li>
