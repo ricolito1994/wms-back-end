@@ -10,6 +10,7 @@ set up:
 <li>7.) php artisan jwt:secret</li>
 <li>6.) copy the generated key to .env file</li>
 <li>8.) JWT_SECRET="your_generated_key"</li>
+<li>9.) php artisan serve</li>
 </ul>
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
