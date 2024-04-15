@@ -1,3 +1,15 @@
+# WMS BACK END
+set up:
+1.) Install PHP 8.^
+2.) enable ssl in php.ini (/your_directory/php_8.2/php.ini)
+3.) composer install
+4.) cp .env.example .env
+5.) php artisan key:generate
+6.) php artisan config:cache
+7.) php artisan jwt:secret
+6.) copy the generated key to .env file
+8.) JWT_SECRET="your_generated_key"
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
