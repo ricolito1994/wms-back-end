@@ -28,7 +28,7 @@ Route::group(['prefix' => 'auth'], function () {
         Route::get('me' , [AuthController::class, 'me']);
     });
 });
-
+// route body
 Route::group(['middleware' => 'jwt'] , function () {
     Route::group(['prefix' => 'unit'], function () {
         Route::post('update/{id}', [UnitController::class, 'update']);
