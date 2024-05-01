@@ -30,5 +30,10 @@ Route::group(['prefix' => 'auth'], function () {
 });
 
 Route::group(['middleware' => 'jwt'] , function () {
-
+    Route::group(['prefix' => 'unit'], function () {
+        Route::post('update/{id}', [UnitController::class, 'update']);
+        Route::post('create', [UnitController::class, 'create']);
+        Route::delete('delete', [UnitController::class, 'delete']);  
+        Route::get('show/{id?}', [UnitController::class, 'show']);
+    });
 });
