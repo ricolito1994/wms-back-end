@@ -23,8 +23,12 @@ class UnitController extends Controller
     {
         //
         try {
+            $req = $request->all();
             DB::beginTransaction();
-            $unit = Unit::create($request->all());
+            $unit = Unit::updateOrCreate($req, [
+                'plate_number', 
+                $req['plate_number']
+            ]);
             DB::commit();
             return response()->json([
                 'message' => "Success create unit", 
@@ -45,30 +49,40 @@ class UnitController extends Controller
      * Display the specified resource.
      */
     public function show(Request $request, $unitId = null)
-    {
+    {   
         //
         try{
             if (isset($unitId)) {
-                $unit = Unit::find($unitId)->get();
+                $unit = Unit::find($unitId);
                 return response()->json([
                     'result' => $unit,
                     'success' => true,
                 ], 200);
             } else {
-                $searchBy = $request->input();
+                $searchBy = $request->all();
                 $unit = null;
-                if (isset($searchBy['sort_key']) && $searchBy['sort_key'] !== 'All') {
-                    $unit = Unit::where([
-                        $searchBy['sort_key'] => $searchBy['searchValue']
-                        ])
-                        ->paginate(5);
+                if (
+                    isset($searchBy['searchValue']) && 
+                    $searchBy['sort_key'] !== 'all'
+                ) {
+                    $unit = Unit::where(
+                        $searchBy['sort_key'], 
+                        'like', 
+                        "%{$searchBy['searchValue']}%"
+                    )
+                    ->orderBy('id')
+                    ->paginate(5);
+                    return response()->json([
+                        'result' => $unit,
+                        'success' => true,
+                    ], 200);
                 } else {
-                    $unit = Unit::paginate(5);
+                    $unit = Unit::orderBy('id')->paginate(5);
+                    return response()->json([
+                        'result' => $unit,
+                        'success' => true,
+                    ], 200);
                 }
-                return response()->json([
-                    'result' => $unit,
-                    'success' => true,
-                ], 200);
             }
         }catch(Exception $e){
             return response()->json([
