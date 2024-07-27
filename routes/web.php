@@ -36,4 +36,14 @@ Route::group(['middleware' => 'jwt'] , function () {
         Route::delete('delete', [UnitController::class, 'delete']);  
         Route::get('show/{id?}', [UnitController::class, 'show']);
     });
+    Route::group(['prefix' => 'employee', 'namespace' => 'App\Http\Controllers'], function () {
+        Route::post('create',  'HumanResourceController@create');
+        Route::get('show',  'HumanResourceController@index');
+        Route::get('{employee}',  'HumanResourceController@show');
+        Route::delete('{employee}',  'HumanResourceController@delete');
+
+        Route::group(['prefix' => 'crew'], function () {
+            Route::post('create',  'HumanResourceController@createCrew');
+        });
+    });
 });

@@ -25,10 +25,8 @@ class UnitController extends Controller
         try {
             $req = $request->all();
             DB::beginTransaction();
-            $unit = Unit::updateOrCreate($req, [
-                'plate_number', 
-                $req['plate_number']
-            ]);
+            $updteCondition = isset($req['id']) ? ['id' => $req['id']] : [];
+            $unit = Unit::updateOrCreate($updteCondition, $req);
             DB::commit();
             return response()->json([
                 'message' => "Success create unit", 
@@ -36,7 +34,7 @@ class UnitController extends Controller
                 "data" => $unit,
             ], 200);
         } catch(Exception $e) {
-            //DB::rollback();
+            DB::rollback();
             return response()->json([
                 'message' => $e->getMessage(),
                 'success' => false,
@@ -84,7 +82,7 @@ class UnitController extends Controller
                     ], 200);
                 }
             }
-        }catch(Exception $e){
+        } catch(Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
                 'success' => false,
@@ -101,7 +99,7 @@ class UnitController extends Controller
         try {
             DB::beginTransaction();
             $request = $request->all();
-            $unit = Unit::updateOrCreate($request, ['id', $unitId]);
+            $unit = Unit::updateOrCreate(['id', $unitId], $request);
             DB::commit();
             return response()->json([
                 'message' => "Update unit success", 

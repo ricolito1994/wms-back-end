@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('lastname');
             $table->string('middlename');
             $table->string('fullname');
-            $table->string('address');
             $table->string('position');
             $table->string('designation');
             $table->string('username')->unique()->nullable();
@@ -26,6 +25,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->boolean('is_active');
             $table->string('created_by')->references('id')->on('users')->nullable();
+            $table->integer('address')->references('id')->on('address_id')->nullable();
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

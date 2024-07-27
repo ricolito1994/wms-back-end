@@ -21,7 +21,7 @@ class UsersSeeder extends Seeder
                 'lastname' => 'Banaja',
                 'middlename' => '-',
                 'fullname' => 'John Joseph Banaja',
-                'address' => 'Barangay Sampinit, Bago City',
+                //'address' => 'Barangay Sampinit, Bago City',
                 'position' => 'CENRO OFFICER',
                 'designation' => 'admin',
                 'username' => 'johnjoseph',
