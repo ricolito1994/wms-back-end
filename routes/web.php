@@ -38,9 +38,10 @@ Route::group(['middleware' => 'jwt'] , function () {
     });
     Route::group(['prefix' => 'employee', 'namespace' => 'App\Http\Controllers'], function () {
         Route::post('create',  'HumanResourceController@create');
+        Route::post('{userId}/update',  'HumanResourceController@update');
         Route::get('show',  'HumanResourceController@index');
-        Route::get('{employee}',  'HumanResourceController@show');
-        Route::delete('{employee}',  'HumanResourceController@delete');
+        Route::get('{userId}',  'HumanResourceController@show');
+        Route::delete('{userId}',  'HumanResourceController@delete');
 
         Route::group(['prefix' => 'crew'], function () {
             Route::post('create',  'HumanResourceController@createCrew');

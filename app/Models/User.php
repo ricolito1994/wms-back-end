@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -25,6 +26,9 @@ class User extends Authenticatable implements JWTSubject
         'fullname',
         'email',
         'password',
+        'designation',
+        'position',
+        'is_active',
     ];
 
     /**
@@ -57,5 +61,21 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
+    public function getFullnameAttribute()
+    {
+        return "{$this->firstname} {$this->lastname}";
+    }
+
+    public function getAddressAttribute()
+    {
+        return "";
+    }
+    
+    public function scopeByFullname ($q, $fname) 
+    {
+        return $q->whereRaw("CONCAT(firstname,' ',lastname) LIKE '%{$fname}%'");
+    }
+
+    protected $appends = ["fullname", "address"];
     
 }
