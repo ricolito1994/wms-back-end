@@ -52,7 +52,9 @@ class UnitController extends Controller
         //
         try{
             if (isset($unitId)) {
-                $unit = Unit::find($unitId);
+                $unit = Unit::with(['crew' => function($q) {
+                    $q->with('employee');
+                }])->find($unitId);
                 return response()->json([
                     'result' => $unit,
                     'success' => true,
@@ -69,6 +71,9 @@ class UnitController extends Controller
                         'like', 
                         "%{$searchBy['searchValue']}%"
                     )
+                    ->with(['crew' => function($q) {
+                        $q->with('employee');
+                    }])
                     ->orderBy('id')
                     ->paginate(5);
                     return response()->json([
@@ -76,7 +81,9 @@ class UnitController extends Controller
                         'success' => true,
                     ], 200);
                 } else {
-                    $unit = Unit::orderBy('id')->paginate(5);
+                    $unit = Unit::with(['crew' => function($q) {
+                        $q->with('employee');
+                    }])->orderBy('id')->paginate(5);
                     return response()->json([
                         'result' => $unit,
                         'success' => true,

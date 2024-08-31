@@ -33,4 +33,9 @@ class Unit extends Model
     ];
 
     protected $casts = [];
+
+    public function crew() 
+    {
+        return $this->hasMany('App\Models\Crew', 'unit_id', 'id');
+    }
 }

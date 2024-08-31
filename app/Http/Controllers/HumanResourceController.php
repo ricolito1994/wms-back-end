@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Unit;
+use App\Models\Crew;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
@@ -87,7 +89,48 @@ class HumanResourceController extends Controller
         } 
     }
 
-    public function createCrew () 
+    public function createCrew (int $unitId) 
     {
+        try {
+            $request = request()->all();
+            if (isset($request['crew'])) {
+                
+                $unit = Unit::find($unitId);
+                Crew::where('unit_id', $unitId)->delete();
+                foreach($request['crew'] as $crew):
+                    $unit->crew()->create($crew);
+                endforeach;
+
+                return  response()->json([
+                    'data' => Crew::with('employee')->where('unit_id', $unitId)->whereNull('deleted_at')->get(),
+                    'success' => true,
+                ], 200);
+            }
+            return response()->json([
+                'err' => 'crew is required',
+                'success' => false,
+            ], 400);
+        } catch (\Exception $e) {
+            return response()->json([
+                'err' => $e->getMessage(),
+                'success' => false,
+            ], 400);
+        }
+    }
+
+    public function getCrew (int $unitId) 
+    {
+        try {
+            return  response()->json([
+                'data' =>  Crew::where('unit_id', $unitId)->get(),
+                'success' => true,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'err' => $e->getMessage(),
+                'success' => false,
+            ], 400);
+        }
     }
 }

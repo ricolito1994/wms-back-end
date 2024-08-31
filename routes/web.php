@@ -44,7 +44,8 @@ Route::group(['middleware' => 'jwt'] , function () {
         Route::delete('{userId}',  'HumanResourceController@delete');
 
         Route::group(['prefix' => 'crew'], function () {
-            Route::post('create',  'HumanResourceController@createCrew');
+            Route::post('{unitId}',  'HumanResourceController@createCrew');
+            Route::get('{unitId}',  'HumanResourceController@getCrew');
         });
     });
 });
