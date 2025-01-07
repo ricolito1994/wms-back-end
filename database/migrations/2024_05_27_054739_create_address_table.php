@@ -18,8 +18,8 @@ return new class extends Migration
             $table->integer('purok_id')->references('id')->on('purok')->nullable();
             $table->integer('barangay_id')->references('id')->on('barangay')->nullable();
             $table->float('population')->nullable();
-            $table->float('long')->nullable();
-            $table->float('lat')->nullable();
+            $table->string('longitude')->nullable();
+            $table->string('latitude')->nullable();
             $table->integer('created_by')->references('id')->on('users')->nullable();
             $table->timestamps();
         });

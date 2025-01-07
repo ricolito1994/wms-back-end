@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('purok', function (Blueprint $table) {
+        Schema::create('unit_route_template', function (Blueprint $table) {
             $table->id();
-            $table->string('purok_name');
-            $table->float('population')->nullable();
-            $table->string('longitude')->nullable();
-            $table->string('latitude')->nullable();
-            $table->integer('created_by')->references('id')->on('users')->nullable();
+            $table->integer('unit_id')->references('id')->on('units')->nullable();
+            $table->boolean('is_active')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('purok');
+        Schema::dropIfExists('unit_route_template');
     }
 };

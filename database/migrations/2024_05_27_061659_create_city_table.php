@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('city_name');
             $table->string('population')->nullable(); 
-            $table->float('long')->nullable();
-            $table->float('lat')->nullable();
+            $table->string('longitude')->nullable();
+            $table->string('latitude')->nullable();
             $table->integer('created_by')->references('id')->on('users')->nullable();
             $table->timestamps();
             $table->softDeletes();

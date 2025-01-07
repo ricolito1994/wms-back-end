@@ -26,9 +26,9 @@ class HumanResourceController extends Controller
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
-                'err' => $e,
+                'err' => $e->getMessage(),
                 'success' => false,
-            ], 200);
+            ], 500);
         }
     }
 
