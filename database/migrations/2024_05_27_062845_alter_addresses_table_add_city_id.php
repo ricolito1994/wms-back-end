@@ -14,6 +14,7 @@ return new class extends Migration
         //
         Schema::table('purok', function (Blueprint $table) { 
             $table->integer('city_id')->references('id')->on('city')->nullable();
+            $table->integer('barangay_id')->references('id')->on('barangay')->nullable();
         });
         Schema::table('barangay', function (Blueprint $table) { 
             $table->integer('city_id')->references('id')->on('city')->nullable();

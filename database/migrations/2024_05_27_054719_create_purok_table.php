@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('longitude')->nullable();
             $table->string('latitude')->nullable();
             $table->integer('created_by')->references('id')->on('users')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

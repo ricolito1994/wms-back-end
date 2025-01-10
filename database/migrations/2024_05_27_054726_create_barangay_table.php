@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('barangay', function (Blueprint $table) {
             $table->id();
-            $table->string('purok_name');
+            $table->string('barangay_name');
             $table->float('population')->nullable();
             $table->string('longitude')->nullable();
             $table->string('latitude')->nullable();
             $table->integer('created_by')->references('id')->on('users')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

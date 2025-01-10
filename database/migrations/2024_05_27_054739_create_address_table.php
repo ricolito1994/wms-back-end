@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('address', function (Blueprint $table) {
             $table->id();
             $table->string('street')->nullable();
+            $table->string('address_type')->nullable();
             $table->string('lot_number')->nullable();
+            $table->integer('street_id')->references('id')->on('address')->nullable();
             $table->integer('purok_id')->references('id')->on('purok')->nullable();
             $table->integer('barangay_id')->references('id')->on('barangay')->nullable();
             $table->float('population')->nullable();
