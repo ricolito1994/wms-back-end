@@ -51,8 +51,8 @@ Route::group(['middleware' => 'jwt'] , function () {
     Route::group(['prefix' => 'landmark', 'namespace' => 'App\Http\Controllers'], function () {
         Route::get('{type}',  'LandmarksController@show');
         Route::get('{landmarkId}/{type}',  'LandmarksController@get');
-        Route::post('{type}',  'HumanResourceController@create');
-        Route::patch('{landmarkId}/{type}',  'HumanResourceController@update');
-        Route::delete('{landmarkId}/{type}',  'HumanResourceController@delete');
+        Route::post('{type}',  'LandmarksController@store');
+        Route::patch('{landmarkId}/{type}',  'LandmarksController@update');
+        Route::delete('{landmarkId}/{type}',  'LandmarksController@delete');
     });
 });

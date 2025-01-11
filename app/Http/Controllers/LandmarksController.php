@@ -18,23 +18,31 @@ class LandmarksController extends Controller
             switch ($type) {
                 case "city":
                     $response = City::filter($request)
-                        ->paginate(5);
+                        ->orderBy('id')
+                        ->paginate(6);
                     break;
                 case "purok":
                     $response = Purok::filter($request)
-                        ->with('city')
-                        ->with('barangay')
-                        ->paginate(5);
+                        ->with(['city', 'barangay'])
+                        ->orderBy('id')
+                        ->paginate(6);
                     break;
                 case "barangay":
                     $response = Barangay::filter($request)
-                        ->with('city')
-                        ->with('purok')
-                        ->paginate(5);
+                        ->with(['city', 'purok'])
+                        ->orderBy('id', 'DESC')
+                        ->paginate(6);
                     break;
                 case "address":
                     $response = Address::filter($request)
-                        ->paginate(5);
+                        ->with([
+                            'city', 
+                            'purok', 
+                            'barangay', 
+                            'street'
+                        ])
+                        ->orderBy('id')
+                        ->paginate(6);
                     break;
             }
             return response()->json([
@@ -86,16 +94,16 @@ class LandmarksController extends Controller
             DB::beginTransaction();
             switch ($type) {
                 case "city":
-                    $response = City::create($request);
+                    $response = City::create($request->all());
                     break;
                 case "purok":
-                    $response = Purok::create($request);
+                    $response = Purok::create($request->all());
                     break;
                 case "barangay":
-                    $response = Barangay::create($request);
+                    $response = Barangay::create($request->all());
                     break;
                 case "address":
-                    $response = Address::create($request);
+                    $response = Address::create($request->all());
                     break;
             }
             DB::commit();
@@ -123,19 +131,19 @@ class LandmarksController extends Controller
             switch ($type) {
                 case "city":
                     $response = City::findOrFail($landmarkId)
-                        ->update($request);
+                        ->update($request->all());
                     break;
                 case "purok":
                     $response = Purok::findOrFail($landmarkId)
-                        ->update($request);
+                        ->update($request->all());
                     break;
                 case "barangay":
                     $response = Barangay::findOrFail($landmarkId)
-                        ->update($request);
+                        ->update($request->all());
                     break;
                 case "address":
                     $response = Address::findOrFail($landmarkId)
-                        ->update($request);
+                        ->update($request->all());
                     break;
             }
             DB::commit();
