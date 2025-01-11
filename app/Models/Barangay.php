@@ -33,7 +33,7 @@ class Barangay extends Model
 
     public function city () 
     {
-        return $this->hasOne(City::class, 'city_id', 'id');
+        return $this->hasOne(City::class, 'id', 'city_id');
     }
 
     public function createdBy () 
@@ -43,7 +43,7 @@ class Barangay extends Model
 
     public function purok () 
     {
-        return $this->hasMany(Purok::class, 'barangay_id', 'id');
+        return $this->hasMany(Purok::class, 'id', 'barangay_id');
     }
 
     public function scopeFilter (Builder $query, Request $request) 
