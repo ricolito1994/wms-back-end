@@ -5,12 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 
 class Purok extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'barangay';
+    protected $table = 'purok';
 
     protected $primary_key = 'id';
 
@@ -31,7 +33,7 @@ class Purok extends Model
 
     public function city () 
     {
-        return $this->hasOne(City::class, 'city_id', 'id');
+        return $this->hasOne(City::class, 'id', 'city_id');
     }
 
     public function createdBy () 
@@ -41,15 +43,17 @@ class Purok extends Model
 
     public function barangay () 
     {
-        return $this->hasOne(Barangay::class, 'barangay_id', 'id');
+        return $this->hasOne(Barangay::class, 'id', 'barangay_id');
     }
 
     public function scopeFilter (Builder $query, Request $request) 
     {
         $query->when($request->city_id, function($query, $city_id) {
             $query->where('city_id', $city_id);
-        })->when($request->barangay_name, function($query, $purok_name) {
-            $query->where('barangay_name', 'like', '%'.$purok_name.'%');
+        })->when($request->barangay_id, function($query, $barangay_id) {
+            $query->where('barangay_id', $barangay_id);
+        })->when($request->purok_name, function($query, $purok_name) {
+            $query->where('purok_name', 'like', '%'.$purok_name.'%');
         });
     }
 }
