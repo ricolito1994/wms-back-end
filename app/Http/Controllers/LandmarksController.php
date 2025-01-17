@@ -73,7 +73,13 @@ class LandmarksController extends Controller
                         ->findOrFail($landmarkId);
                     break;
                 case "address":
-                    $response = Address::findOrFail($landmarkId);
+                    $response = Address::with([
+                        'city', 
+                        'purok', 
+                        'barangay', 
+                        'street'
+                    ])
+                        ->findOrFail($landmarkId);
                     break;
             }
             return response()->json([
