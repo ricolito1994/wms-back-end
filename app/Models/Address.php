@@ -5,12 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 
 class Address extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'full_address',
         'street',
         'address_type',
         'lot_number',
@@ -65,23 +68,24 @@ class Address extends Model
     {
         $query->when($request->city_id, function($query, $city_id) {
             $query->where('city_id', $city_id);
-        })->when($request->city_id, function($query, $city_id) {
+        })->when($request->barangay_id, function($query, $barangay_id) {
             $query->where('barangay_id', $barangay_id);
         })->when($request->purok_id, function($query, $purok_id) {
             $query->where('purok_id', $purok_id);
         })->when($request->city_id, function($query, $city_id) {
             $query->where('city_id', $city_id);
-        })->when($request->address_type , function($query, $address_type) use ($request) {
-            if (isset($request->address_name)) return;
-            if ($address_type === 'lot_address')
-                $query->where('street', 'like', '%' .$request->address_name. '%');
-            else $query->where('lot_number', 'like', '%' .$request->address_name. '%');
+        })->when($request->address_type , function($query, $address_type) {
+            $query->where('address_type', $address_type);
         })->when($request->address_name, function($query, $address_name) {
-            $query->where (function ($q) use ($address_name) {
-                $q->where ("street", 'LIKE', "%{$adress_name}%")
-                  ->orWhere ("lot_number", 'LIKE', "%{$adress_name}%");
-            });
+            $query->where (DB::raw("CONCAT(lot_number, ' ', street)"), 'LIKE', "%{$address_name}%");
+        })->when($request->full_address_name, function($query, $full_address_name) {
+            $query->where (DB::raw("full_address"), 'LIKE', "%{$full_address_name}%");
         });
+    }
+
+    public function getFullAddressAttribute () 
+    {
+        return '';
     }
 
 }
