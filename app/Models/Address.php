@@ -61,7 +61,7 @@ class Address extends Model
 
     public function street () 
     {
-        return $this->hasOne(Address::class, 'id', 'street_id');
+        return $this->hasOne(Address::class, 'id', 'street');
     }
 
     public function scopeFilter (Builder $query, Request $request) 
@@ -83,7 +83,7 @@ class Address extends Model
         });
     }
 
-    public function getFullAddressAttribute () 
+    public function getFullAddressNameAttribute () 
     {
         return '';
     }
