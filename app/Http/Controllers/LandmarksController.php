@@ -57,6 +57,52 @@ class LandmarksController extends Controller
         }
     }
 
+    public function all (Request $request, string $type) 
+    {
+        try {
+            switch ($type) {
+                case "city":
+                    $response = City::filter($request)
+                        ->orderBy('id')
+                        ->get();
+                    break;
+                case "purok":
+                    $response = Purok::filter($request)
+                        ->with(['city', 'barangay'])
+                        ->orderBy('id')
+                        ->get();
+                    break;
+                case "barangay":
+                    $response = Barangay::filter($request)
+                        ->with(['city', 'purok'])
+                        ->orderBy('id', 'DESC')
+                        ->get();
+                    break;
+                case "address":
+                    $response = Address::filter($request)
+                        ->with([
+                            'city', 
+                            'purok', 
+                            'barangay', 
+                            'street'
+                        ])
+                        ->orderBy('id')
+                        ->get();
+                    break;
+            }
+            return response()->json([
+                'data' => $response,
+                'address_type' => $type,
+                'success' => true,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'err' => $e,
+                'success' => false,
+            ], 500);
+        }
+    }
+
     public function get (int $landmarkId, string $type) 
     {
         try {
