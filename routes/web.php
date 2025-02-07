@@ -55,4 +55,7 @@ Route::group(['middleware' => 'jwt'] , function () {
         Route::patch('{landmarkId}/{type}',  'LandmarksController@update');
         Route::delete('{landmarkId}/{type}',  'LandmarksController@delete');
     });
+    Route::group(['prefix' => 'landmarks', 'namespace' => 'App\Http\Controllers'], function () { 
+        Route::get('all/{type}',  'LandmarksController@all');
+    });
 });
