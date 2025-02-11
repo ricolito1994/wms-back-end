@@ -182,20 +182,24 @@ class LandmarksController extends Controller
             DB::beginTransaction();
             switch ($type) {
                 case "city":
-                    $response = City::findOrFail($landmarkId)
-                        ->update($request->all());
+                    $response = tap(City::findOrFail($landmarkId))
+                        ->update($request->all())
+                        ->fresh();
                     break;
                 case "purok":
-                    $response = Purok::findOrFail($landmarkId)
-                        ->update($request->all());
+                    $response = tap(Purok::findOrFail($landmarkId))
+                        ->update($request->all())
+                        ->fresh();
                     break;
                 case "barangay":
-                    $response = Barangay::findOrFail($landmarkId)
-                        ->update($request->all());
+                    $response = tap(Barangay::findOrFail($landmarkId))
+                        ->update($request->all())
+                        ->fresh();
                     break;
                 case "address":
-                    $response = Address::findOrFail($landmarkId)
-                        ->update($request->all());
+                    $response = tap(Address::findOrFail($landmarkId))
+                        ->update($request->all())
+                        ->fresh();
                     break;
             }
             DB::commit();
