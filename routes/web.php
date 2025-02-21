@@ -57,5 +57,6 @@ Route::group(['middleware' => 'jwt'] , function () {
     });
     Route::group(['prefix' => 'landmarks', 'namespace' => 'App\Http\Controllers'], function () { 
         Route::get('all/{type}',  'LandmarksController@all');
+        Route::get('getAllLandmarks',  'LandmarksController@getAllLandmarks');
     });
 });
