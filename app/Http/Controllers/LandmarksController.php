@@ -15,6 +15,7 @@ class LandmarksController extends Controller
     public function show (Request $request, string $type) 
     {
         try {
+            $response = null;
             switch ($type) {
                 case "city":
                     $response = City::filter($request)
@@ -244,6 +245,39 @@ class LandmarksController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'err' => $e,
+                'success' => false,
+            ], 500);
+        }
+    }
+
+    public function getAllLandmarks (Request $request) 
+    {
+        try {
+            if (! $request->has('place_name'))
+                throw  new \Exception("place_name is undefined.");
+
+            $place_name = $request->place_name;
+
+            $barangay = DB::table('barangay')->select(DB::raw("CONCAT('barangay-',id) as id"), DB::raw("'barangay' as address_type"),'barangay_name as place_name','longitude','latitude')
+                ->where('barangay_name', 'LIKE', "%{$place_name}%");
+            $purok = DB::table('purok')->select(DB::raw("CONCAT('purok-',id) as id"), DB::raw("'purok' as address_type"),'purok_name as place_name','longitude','latitude')
+                ->where('purok_name', 'LIKE', "%{$place_name}%");
+            $address = DB::table('address')->select(DB::raw("CONCAT('address-',id) as id"), DB::raw("'address' as address_type"),'full_address as place_name','longitude','latitude')
+                ->where('full_address', 'LIKE', "%{$place_name}%");
+            
+            $response = $address
+                ->union($barangay)
+                ->union($purok)
+                ->orderBy('place_name')
+                ->paginate(10);
+
+            return response()->json([
+                'success' => true,
+                'data' => $response,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'err' => $e->getMessage(),
                 'success' => false,
             ], 500);
         }
