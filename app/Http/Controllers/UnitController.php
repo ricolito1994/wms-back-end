@@ -28,12 +28,7 @@ class UnitController extends Controller
             DB::beginTransaction();
             
             $updteCondition =  ['id' => $req['id']] ;
-            $unit = Unit::updateOrCreate($updteCondition, [
-                "model_name" => $req['model_name'],
-                "plate_number" => $req['plate_number'],
-                "chassis_number" => $req['chassis_number'],
-                "gross_weight" => $req['gross_weight'],
-            ]);
+            $unit = Unit::updateOrCreate($updteCondition, $req);
             DB::commit();
             return response()->json([
                 'message' => "Success create unit", 
