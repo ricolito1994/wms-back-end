@@ -67,12 +67,7 @@ class UnitController extends Controller
                     isset($searchBy['searchValue']) && 
                     $searchBy['sort_key'] !== 'all'
                 ) {
-                    $unit = Unit::where(
-                        $searchBy['sort_key'], 
-                        'like', 
-                        "%{$searchBy['searchValue']}%"
-                    )
-                    ->with(['crew' => function($q) {
+                    $unit = Unit::with(['crew' => function($q) {
                         $q->with('employee');
                     }])
                     ->orderBy('id')
