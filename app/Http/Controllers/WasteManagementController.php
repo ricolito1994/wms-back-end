@@ -12,6 +12,14 @@ class WasteManagementController extends Controller
     public function index()
     {
         //
+        return response () -> json ([
+            "success" => true,
+            "response" => [
+                "sample" => [
+                    "s" => 1
+                ]
+            ]
+        ]);
     }
 
     /**
@@ -20,6 +28,10 @@ class WasteManagementController extends Controller
     public function store(Request $request)
     {
         //
+        return response()->json([
+            "request" => $request->all(),
+            "success" => true
+        ]);
     }
 
     /**

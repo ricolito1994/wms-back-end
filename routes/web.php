@@ -36,27 +36,35 @@ Route::group(['middleware' => 'jwt'] , function () {
         Route::delete('delete', [UnitController::class, 'delete']);  
         Route::get('show/{id?}', [UnitController::class, 'show']);
     });
-    Route::group(['prefix' => 'employee', 'namespace' => 'App\Http\Controllers'], function () {
-        Route::post('create',  'HumanResourceController@create');
-        Route::post('{userId}/update',  'HumanResourceController@update');
-        Route::get('show',  'HumanResourceController@index');
-        Route::get('{userId}',  'HumanResourceController@show');
-        Route::delete('{userId}',  'HumanResourceController@delete');
+    Route::group(['namespace' => 'App\Http\Controllers'], function () {
+        Route::group(['prefix' => 'employee'], function () {
+            Route::post('create',  'HumanResourceController@create');
+            Route::post('{userId}/update',  'HumanResourceController@update');
+            Route::get('show',  'HumanResourceController@index');
+            Route::get('{userId}',  'HumanResourceController@show');
+            Route::delete('{userId}',  'HumanResourceController@delete');
 
-        Route::group(['prefix' => 'crew'], function () {
-            Route::post('{unitId}',  'HumanResourceController@createCrew');
-            Route::get('{unitId}',  'HumanResourceController@getCrew');
+            Route::group(['prefix' => 'crew'], function () {
+                Route::post('{unitId}',  'HumanResourceController@createCrew');
+                Route::get('{unitId}',  'HumanResourceController@getCrew');
+            });
         });
-    });
-    Route::group(['prefix' => 'landmark', 'namespace' => 'App\Http\Controllers'], function () {
-        Route::get('{type}',  'LandmarksController@show');
-        Route::get('{landmarkId}/{type}',  'LandmarksController@get');
-        Route::post('{type}',  'LandmarksController@store');
-        Route::patch('{landmarkId}/{type}',  'LandmarksController@update');
-        Route::delete('{landmarkId}/{type}',  'LandmarksController@delete');
-    });
-    Route::group(['prefix' => 'landmarks', 'namespace' => 'App\Http\Controllers'], function () { 
-        Route::get('all/{type}',  'LandmarksController@all');
-        Route::get('getAllLandmarks',  'LandmarksController@getAllLandmarks');
+        Route::group(['prefix' => 'landmark'], function () {
+            Route::get('{type}',  'LandmarksController@show');
+            Route::get('{landmarkId}/{type}',  'LandmarksController@get');
+            Route::post('{type}',  'LandmarksController@store');
+            Route::patch('{landmarkId}/{type}',  'LandmarksController@update');
+            Route::delete('{landmarkId}/{type}',  'LandmarksController@delete');
+        });
+        Route::group(['prefix' => 'landmarks'], function () { 
+            Route::get('all/{type}',  'LandmarksController@all');
+            Route::get('getAllLandmarks',  'LandmarksController@getAllLandmarks');
+        });
+        Route::group(['prefix' => 'wastemanagement'], function () { 
+            Route::get('',   'WasteManagementController@index');
+            Route::post('',  'WasteManagementController@store');
+        });
+        Route::group(['prefix' => 'feed'], function () { 
+        });
     });
 });
