@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./docker/conf/nginx.prod.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - wms-app-1
+      - wms-app-2
+  wms-app-1:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: wms-app-1
+    volumes:
+      - .:/var/www/html
+    environment:
+      - APP_ENV=production
+      - DB_HOST=your-db-host
+      - DB_PORT=3306
+      - REDIS_HOST=127.0.0.1
+    restart: always
+  wms-app-2:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: wms-app-2
+    volumes:
+      - .:/var/www/html
+    environment:
+      - APP_ENV=production
+      - DB_HOST=your-db-host
+      - DB_PORT=3306
+      - REDIS_HOST=127.0.0.1
+    restart: always

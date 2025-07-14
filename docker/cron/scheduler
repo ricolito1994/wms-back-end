@@ -1,0 +1,4 @@
+# * * * * * cd /var/www/html && php artisan schedule:run >> /var/log/cron.log 2>&1
+# 0 0 * * * /usr/bin/certbot renew --webroot --webroot-path=/var/www/certbot && nginx -s reload
+# maybe if needed
+# just leave it here
