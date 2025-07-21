@@ -20,7 +20,7 @@ services:
       - .:/var/www/html
     environment:
       - APP_ENV=production
-      - DB_HOST=your-db-host
+      - DB_HOST=wmsdbprod
       - DB_PORT=3306
       - REDIS_HOST=127.0.0.1
     restart: always
