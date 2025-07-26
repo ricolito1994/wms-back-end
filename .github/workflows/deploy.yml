@@ -1,0 +1,49 @@
+name: 🚀 Deploy to EC2 on Stable Push
+
+on:
+  push:
+    branches:
+      - stable
+
+jobs:
+  deploy:
+    name: 🐧 Deploy to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔐 Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: 🚀 SSH into EC2 and deploy
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+            set -e  # ❗ exit on first error
+
+            cd /var/www/wms-back-end
+
+            echo "📦 Pulling latest code..."
+            git reset --hard
+            git clean -fd
+            git pull origin stable
+
+            echo "🐳 Rebuilding Docker containers..."
+            sudo docker compose -f docker-compose.prod.yml down
+            sudo docker compose -f docker-compose.prod.yml up -d --build
+
+            echo "✅ Deployment complete!"
+
+            # 🔍 Optional: Health check
+            echo "🔎 Checking health..."
+            curl -fsSL https://your-domain.com || echo "⚠️ Health check failed!"
+
+            # ✅ Optional: Run Laravel tests inside container (uncomment if needed)
+            # echo "🧪 Running Laravel tests..."
+            # sudo docker exec wms-app-1 php artisan test
+          EOF
