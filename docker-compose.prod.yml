@@ -11,6 +11,9 @@ services:
     depends_on:
       - wms-app-1
       - wms-app-2
+    networks:
+      - app-network
+
   wms-app-1:
     build:
       context: .
@@ -24,6 +27,9 @@ services:
       - DB_PORT=3306
       - REDIS_HOST=127.0.0.1
     restart: always
+    networks:
+      - app-network
+
   wms-app-2:
     build:
       context: .
@@ -37,3 +43,9 @@ services:
       - DB_PORT=3306
       - REDIS_HOST=127.0.0.1
     restart: always
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
