@@ -35,8 +35,15 @@ cd /var/www/html
 # Step 3: Fix file permissions
 # -------------------------------
 echo "🔧 Setting correct permissions..."
+
+# Fix Laravel writable dirs
 chown -R www-data:www-data storage bootstrap/cache
 chmod -R 775 storage bootstrap/cache
+
+# Fix entire Laravel project (safe if running in container)
+chown -R www-data:www-data /var/www/html
+find /var/www/html -type f -exec chmod 664 {} \;
+find /var/www/html -type d -exec chmod 775 {} \;
 
 # -------------------------------
 # Step 4: Laravel Composer setup

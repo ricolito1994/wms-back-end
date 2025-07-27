@@ -36,6 +36,11 @@ WORKDIR /var/www/html
 # Install PHP dependencies
 RUN composer install --no-dev --prefer-dist --optimize-autoloader
 
+# Fix permissions and ownership (important!)
+RUN chown -R www-data:www-data /var/www/html \
+    && find /var/www/html -type f -exec chmod 664 {} \; \
+    && find /var/www/html -type d -exec chmod 775 {} \;
+
 # Copy configs
 COPY docker/cron/scheduler /etc/cron.d/scheduler
 RUN chmod 0644 /etc/cron.d/scheduler && crontab /etc/cron.d/scheduler
