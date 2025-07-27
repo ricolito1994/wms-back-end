@@ -28,6 +28,9 @@ jobs:
 
             cd /var/www/wms-back-end
 
+            echo "🔧 Fixing file permissions before git pull..."
+            sudo chown -R ubuntu:ubuntu .
+
             echo "📦 Pulling latest code..."
             git reset --hard
             git clean -fd
