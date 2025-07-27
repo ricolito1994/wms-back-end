@@ -43,5 +43,13 @@ jobs:
             sudo docker compose -f docker-compose.prod.yml down
             sudo docker compose -f docker-compose.prod.yml up -d --build
 
+            # 🔍 Optional: Health check
+            # echo "🔎 Checking health..."
+            # curl -fsSL https://your-domain.com || echo "⚠️ Health check failed!"
+
+            # ✅ Optional: Run Laravel tests inside container (uncomment if needed)
+            # echo "🧪 Running Laravel tests..."
+            # sudo docker exec wms-app-1 php artisan test
+
             echo '✅ Deployment complete!'
           EOF
