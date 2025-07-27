@@ -56,7 +56,10 @@ COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Expose ports
-EXPOSE 80 443
+# EXPOSE 80 443
+
+# Laravel Octane runs on port 8000
+EXPOSE 8000
 
 # Entrypoint
 CMD ["entrypoint.sh"]

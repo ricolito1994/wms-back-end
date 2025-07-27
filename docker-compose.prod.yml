@@ -3,8 +3,9 @@ version: "3.8"
 services:
   nginx:
     image: nginx:alpine
+    container_name: nginx
     volumes:
-      - ./docker/conf/nginx.prod.conf:/etc/nginx/conf.d/default.conf
+      - ./docker/conf/nginx.prod.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
       - "80:80"
       - "443:443"
@@ -20,10 +21,10 @@ services:
       dockerfile: docker/Dockerfile
     container_name: wms-app-1
     volumes:
-      - .:/var/www/html
+      - .:/var/www/html:delegated
     env_file:
       - .env
-    restart: always
+    restart: unless-stopped
     networks:
       - app-network
 
@@ -33,10 +34,10 @@ services:
       dockerfile: docker/Dockerfile
     container_name: wms-app-2
     volumes:
-      - .:/var/www/html
+      - .:/var/www/html:delegated
     env_file:
       - .env
-    restart: always
+    restart: unless-stopped
     networks:
       - app-network
 
