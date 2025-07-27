@@ -1,44 +1,55 @@
 #!/bin/bash
+
 echo "APP_ENV is $APP_ENV"
 
-# Link environment-based nginx config
+# -------------------------------
+# Step 1: Link Nginx config based on environment
+# -------------------------------
 if [ "$APP_ENV" = "production" ]; then
-    echo "Using production Nginx config"
+    echo "🌐 Using production Nginx config"
     cp /etc/nginx/_available/nginx.prod.conf /etc/nginx/conf.d/default.conf
 else
-    echo "Using development Nginx config"
+    echo "🌐 Using development Nginx config"
     cp /etc/nginx/_available/nginx.dev.conf /etc/nginx/conf.d/default.conf
 fi
-
-# Ensure only default.conf exists
 rm -f /etc/nginx/conf.d/nginx.*.conf
 
-# Ensure .env file exists
+# -------------------------------
+# Step 2: Ensure .env exists
+# -------------------------------
 if [ ! -f /var/www/html/.env ]; then
     if [ "$APP_ENV" = "production" ]; then
-        echo "📝 .env file not found. Creating from .env.production.example..."
+        echo "📝 .env not found. Copying from .env.production.example..."
         cp /var/www/html/.env.production.example /var/www/html/.env
     else
-        echo "📝 .env file not found. Creating from .env.dev.example..."
+        echo "📝 .env not found. Copying from .env.development.example..."
         cp /var/www/html/.env.development.example /var/www/html/.env
     fi
 else
-    echo "✅ .env file already exists."
+    echo "✅ .env already exists."
 fi
 
-# Laravel install commands
 cd /var/www/html
 
-composer update --no-interaction --prefer-dist
+# -------------------------------
+# Step 3: Fix file permissions
+# -------------------------------
+echo "🔧 Setting correct permissions..."
+chown -R www-data:www-data storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache
 
-composer install --no-interaction --prefer-dist
+# -------------------------------
+# Step 4: Laravel Composer setup
+# -------------------------------
+# echo "📦 Installing Composer dependencies..."
+# composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Check DB connection loop (wait until DB is up)
-# Wait until DB is available (max 60 seconds)
-MAX_TRIES=1
+# -------------------------------
+# Step 5: Wait for Database
+# -------------------------------
+MAX_TRIES=5
 COUNT=0
-
-echo "⏳ Waiting for database connection..."
+echo "⏳ Waiting for database to be ready..."
 
 until php artisan migrate:status > /dev/null 2>&1; do
     ((COUNT++))
@@ -46,29 +57,31 @@ until php artisan migrate:status > /dev/null 2>&1; do
         echo "❌ Database not reachable after $((MAX_TRIES * 5)) seconds. Exiting."
         exit 1
     fi
-    echo "⏳ Attempt $COUNT/$MAX_TRIES: Waiting for DB..."
+    echo "⏳ Attempt $COUNT/$MAX_TRIES: Still waiting..."
     sleep 5
 done
+echo "✅ Database is ready!"
 
-echo "✅ Database is up!"
-# Run migration only if migration table is not present or empty
-if ! php artisan migrate:status | grep -q "Yes"; then
-    echo "🛠️ Running initial migrations..."
-    php artisan migrate --force
-else
-    echo "✅ Migrations already run. Skipping..."
-fi
-
-# Laravel cache commands
+# -------------------------------
+# Step 6: Laravel setup
+# -------------------------------
+php artisan config:clear
+php artisan cache:clear
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Start all services
-# service php8.3-fpm start
-# php-fpm -D
-# service redis-server start
-# service nginx start
+# Run migrations if not yet run
+echo "🔍 Checking if migrations already ran..."
+if ! php artisan migrate:status | grep -q 'Yes'; then
+    echo "🛠️ Running migrations..."
+    php artisan migrate --force
+else
+    echo "✅ Migrations already applied."
+fi
 
-# Run Supervisor (scheduler + websockets + queue)
-supervisord -n
+# -------------------------------
+# Step 7: Start Supervisor
+# -------------------------------
+echo "🚀 Starting Supervisor..."
+exec supervisord -n

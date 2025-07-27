@@ -21,11 +21,8 @@ services:
     container_name: wms-app-1
     volumes:
       - .:/var/www/html
-    environment:
-      - APP_ENV=production
-      - DB_HOST=wms.cb664q2s0ql0.ap-southeast-2.rds.amazonaws.com
-      - DB_PORT=3306
-      - REDIS_HOST=127.0.0.1
+    env_file:
+      - .env
     restart: always
     networks:
       - app-network
@@ -37,11 +34,8 @@ services:
     container_name: wms-app-2
     volumes:
       - .:/var/www/html
-    environment:
-      - APP_ENV=production
-      - DB_HOST=wms.cb664q2s0ql0.ap-southeast-2.rds.amazonaws.com
-      - DB_PORT=3306
-      - REDIS_HOST=127.0.0.1
+    env_file:
+      - .env
     restart: always
     networks:
       - app-network
