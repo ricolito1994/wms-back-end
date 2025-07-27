@@ -33,8 +33,10 @@ COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 COPY . /var/www/html
 WORKDIR /var/www/html
 
-# Install PHP dependencies
-RUN composer install --no-dev --prefer-dist --optimize-autoloader
+# Install Laravel Octane (and set up with Swoole)
+RUN composer require laravel/octane \
+    && php artisan octane:install --server=swoole \
+    && composer install --no-dev --prefer-dist --optimize-autoloader
 
 # Fix permissions and ownership (important!)
 RUN chown -R www-data:www-data /var/www/html \
