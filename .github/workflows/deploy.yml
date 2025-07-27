@@ -26,27 +26,22 @@ jobs:
           ssh -o StrictHostKeyChecking=no \
               -o ServerAliveInterval=30 \
               -o ServerAliveCountMax=10 \
-              -v ubuntu@${{ secrets.EC2_HOST }} "
-            set -euxo pipefail
+              ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          set -euxo pipefail
 
-            cd /var/www/wms-back-end
+          cd /var/www/wms-back-end
 
-            echo "📦 Pulling latest code..."
-            git reset --hard
-            git clean -fd
-            git pull origin stable
+          echo '🔧 Fixing file permissions before git pull...'
+          sudo chown -R ubuntu:ubuntu .
 
-            echo "🐳 Rebuilding Docker containers..."
-            sudo docker compose -f docker-compose.prod.yml down
-            sudo docker compose -f docker-compose.prod.yml up -d --build
+          echo '📦 Pulling latest code...'
+          git reset --hard
+          git clean -fd
+          git pull origin stable
 
-            echo "✅ Deployment complete!"
+          echo '🐳 Rebuilding Docker containers...'
+          sudo docker compose -f docker-compose.prod.yml down
+          sudo docker compose -f docker-compose.prod.yml up -d --build
 
-            # 🔍 Optional: Health check
-            echo "🔎 Checking health..."
-            curl -fsSL https://your-domain.com || echo "⚠️ Health check failed!"
-
-            # ✅ Optional: Run Laravel tests inside container (uncomment if needed)
-            # echo "🧪 Running Laravel tests..."
-            # sudo docker exec wms-app-1 php artisan test
-          EOF
+          echo '✅ Deployment complete!'
+EOF
