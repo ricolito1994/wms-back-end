@@ -88,7 +88,13 @@ else
 fi
 
 # -------------------------------
-# Step 7: Start Supervisor
+# Step 7: Clean up any stale Octane process to avoid port conflicts
+# -------------------------------
+echo "🔧 Killing any stale Octane processes on port 8000..."
+pkill -f "artisan octane:start" || true
+
+# -------------------------------
+# Step 8: Start Supervisor
 # -------------------------------
 echo "🚀 Starting Supervisor..."
 exec supervisord -n
