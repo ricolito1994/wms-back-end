@@ -90,11 +90,22 @@ fi
 # -------------------------------
 # Step 7: Clean up any stale Octane process to avoid port conflicts
 # -------------------------------
-echo "🔧 Killing any stale Octane processes on port 8000..."
-pkill -f "artisan octane:start" || true
+# echo "🔧 Killing any stale Octane processes on port 8000..."
+# pkill -f "artisan octane:start" || true
+
+echo "🔧 Checking if anything is using port 8000..."
+if fuser 8000/tcp > /dev/null 2>&1; then
+    echo "⚠️ Port 8000 is in use. Killing process..."
+    fuser -k 8000/tcp || true
+    echo "✅ Port 8000 freed."
+else
+    echo "✅ Port 8000 is already free."
+fi
 
 # -------------------------------
 # Step 8: Start Supervisor
 # -------------------------------
+# echo "🚀 Starting Supervisor..."
+# exec supervisord -n
 echo "🚀 Starting Supervisor..."
-exec supervisord -n
+exec /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf

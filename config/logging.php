@@ -52,6 +52,11 @@ return [
     */
 
     'channels' => [
+        'stackOA' => [
+            'driver' => 'stack',
+            'channels' => ['daily', 'slack'], // Example: compose it from existing channels
+            'ignore_exceptions' => false,
+        ],
         'stack' => [
             'driver' => 'stack',
             'channels' => ['single'],
