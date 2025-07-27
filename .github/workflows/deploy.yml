@@ -23,11 +23,11 @@ jobs:
 
       - name: 🚀 SSH into EC2 and deploy
         run: |
-          ssh -o StrictHostKeyChecking=no \
+           ssh -o StrictHostKeyChecking=no \
             -o ServerAliveInterval=30 \
             -o ServerAliveCountMax=10 \
-            -tt ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-          set -e
+            -v ubuntu@${{ secrets.EC2_HOST }} "
+           set -euxo pipefail
 
             cd /var/www/wms-back-end
 
@@ -46,8 +46,8 @@ jobs:
             echo "✅ Deployment complete!"
 
             # 🔍 Optional: Health check
-            echo "🔎 Checking health..."
-            curl -fsSL https://your-domain.com || echo "⚠️ Health check failed!"
+            # echo "🔎 Checking health..."
+            # curl -fsSL https://your-domain.com || echo "⚠️ Health check failed!"
 
             # ✅ Optional: Run Laravel tests inside container (uncomment if needed)
             # echo "🧪 Running Laravel tests..."
