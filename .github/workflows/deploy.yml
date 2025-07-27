@@ -23,8 +23,11 @@ jobs:
 
       - name: 🚀 SSH into EC2 and deploy
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-            set -e  # ❗ exit on first error
+          ssh -o StrictHostKeyChecking=no \
+            -o ServerAliveInterval=30 \
+            -o ServerAliveCountMax=10 \
+            -tt ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          set -e
 
             cd /var/www/wms-back-end
 
