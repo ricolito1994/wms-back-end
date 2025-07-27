@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+set -o pipefail
+
 echo "APP_ENV is $APP_ENV"
 
 # -------------------------------
@@ -35,18 +38,14 @@ cd /var/www/html
 # Step 3: Fix file permissions
 # -------------------------------
 echo "🔧 Setting correct permissions..."
-
-# Fix Laravel writable dirs
 chown -R www-data:www-data storage bootstrap/cache
 chmod -R 775 storage bootstrap/cache
-
-# Fix entire Laravel project (safe if running in container)
 chown -R www-data:www-data /var/www/html
 find /var/www/html -type f -exec chmod 664 {} \;
 find /var/www/html -type d -exec chmod 775 {} \;
 
 # -------------------------------
-# Step 4: Laravel Composer setup
+# Step 4: Laravel Composer setup (optional)
 # -------------------------------
 # echo "📦 Installing Composer dependencies..."
 # composer install --no-interaction --prefer-dist --optimize-autoloader
@@ -78,7 +77,6 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Run migrations if not yet run
 echo "🔍 Checking if migrations already ran..."
 if ! php artisan migrate:status | grep -q 'Yes'; then
     echo "🛠️ Running migrations..."
@@ -88,24 +86,31 @@ else
 fi
 
 # -------------------------------
-# Step 7: Clean up any stale Octane process to avoid port conflicts
+# Step 7: Ensure port 8000 is free (kill stale Octane)
 # -------------------------------
-# echo "🔧 Killing any stale Octane processes on port 8000..."
-# pkill -f "artisan octane:start" || true
-
 echo "🔧 Checking if anything is using port 8000..."
-if fuser 8000/tcp > /dev/null 2>&1; then
-    echo "⚠️ Port 8000 is in use. Killing process..."
-    fuser -k 8000/tcp || true
-    echo "✅ Port 8000 freed."
+if command -v fuser >/dev/null 2>&1; then
+    if fuser 8000/tcp > /dev/null 2>&1; then
+        echo "⚠️ Port 8000 is in use. Killing process..."
+        fuser -k 8000/tcp || true
+        echo "✅ Port 8000 freed."
+    else
+        echo "✅ Port 8000 is already free."
+    fi
 else
-    echo "✅ Port 8000 is already free."
+    echo "⚠️ fuser command not found. Skipping port cleanup."
 fi
 
 # -------------------------------
-# Step 8: Start Supervisor
+# Step 8: Fix LOG_CHANNEL if misconfigured (optional)
 # -------------------------------
-# echo "🚀 Starting Supervisor..."
-# exec supervisord -n
+if grep -q "LOG_CHANNEL=stackOA" .env; then
+    echo "⚠️ LOG_CHANNEL=stackOA is not defined. Reverting to 'stack'."
+    sed -i 's/LOG_CHANNEL=stackOA/LOG_CHANNEL=stack/' .env
+fi
+
+# -------------------------------
+# Step 9: Start Supervisor
+# -------------------------------
 echo "🚀 Starting Supervisor..."
 exec /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
