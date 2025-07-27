@@ -6,19 +6,7 @@ set -o pipefail
 echo "APP_ENV is $APP_ENV"
 
 # -------------------------------
-# Step 1: Link Nginx config based on environment
-# -------------------------------
-if [ "$APP_ENV" = "production" ]; then
-    echo "🌐 Using production Nginx config"
-    cp /etc/nginx/_available/nginx.prod.conf /etc/nginx/conf.d/default.conf
-else
-    echo "🌐 Using development Nginx config"
-    cp /etc/nginx/_available/nginx.dev.conf /etc/nginx/conf.d/default.conf
-fi
-rm -f /etc/nginx/conf.d/nginx.*.conf
-
-# -------------------------------
-# Step 2: Ensure .env exists
+# Ensure .env exists
 # -------------------------------
 if [ ! -f /var/www/html/.env ]; then
     if [ "$APP_ENV" = "production" ]; then
@@ -35,28 +23,18 @@ fi
 cd /var/www/html
 
 # -------------------------------
-# Step 3: Fix file permissions
+# Fix permissions
 # -------------------------------
 echo "🔧 Setting correct permissions..."
 chown -R www-data:www-data storage bootstrap/cache
 chmod -R 775 storage bootstrap/cache
-chown -R www-data:www-data /var/www/html
-find /var/www/html -type f -exec chmod 664 {} \;
-find /var/www/html -type d -exec chmod 775 {} \;
 
 # -------------------------------
-# Step 4: Laravel Composer setup (optional)
-# -------------------------------
-# echo "📦 Installing Composer dependencies..."
-# composer install --no-interaction --prefer-dist --optimize-autoloader
-
-# -------------------------------
-# Step 5: Wait for Database
+# Wait for database
 # -------------------------------
 MAX_TRIES=5
 COUNT=0
 echo "⏳ Waiting for database to be ready..."
-
 until php artisan migrate:status > /dev/null 2>&1; do
     ((COUNT++))
     if [ "$COUNT" -ge "$MAX_TRIES" ]; then
@@ -69,7 +47,7 @@ done
 echo "✅ Database is ready!"
 
 # -------------------------------
-# Step 6: Laravel setup
+# Laravel setup
 # -------------------------------
 php artisan config:clear
 php artisan cache:clear
@@ -86,31 +64,15 @@ else
 fi
 
 # -------------------------------
-# Step 7: Ensure port 8000 is free (kill stale Octane)
-# -------------------------------
-echo "🔧 Checking if anything is using port 8000..."
-if command -v fuser >/dev/null 2>&1; then
-    if fuser 8000/tcp > /dev/null 2>&1; then
-        echo "⚠️ Port 8000 is in use. Killing process..."
-        fuser -k 8000/tcp || true
-        echo "✅ Port 8000 freed."
-    else
-        echo "✅ Port 8000 is already free."
-    fi
-else
-    echo "⚠️ fuser command not found. Skipping port cleanup."
-fi
-
-# -------------------------------
-# Step 8: Fix LOG_CHANNEL if misconfigured (optional)
+# Fix bad log channel
 # -------------------------------
 if grep -q "LOG_CHANNEL=stackOA" .env; then
-    echo "⚠️ LOG_CHANNEL=stackOA is not defined. Reverting to 'stack'."
+    echo "⚠️ Invalid LOG_CHANNEL=stackOA detected. Reverting to 'stack'."
     sed -i 's/LOG_CHANNEL=stackOA/LOG_CHANNEL=stack/' .env
 fi
 
 # -------------------------------
-# Step 9: Start Supervisor
+# Start Supervisor
 # -------------------------------
 echo "🚀 Starting Supervisor..."
 exec /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf

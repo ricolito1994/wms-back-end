@@ -27,6 +27,8 @@ services:
     restart: unless-stopped
     networks:
       - app-network
+    depends_on:
+      - redis
 
   wms-app-2:
     build:
@@ -38,6 +40,14 @@ services:
     env_file:
       - .env
     restart: unless-stopped
+    networks:
+      - app-network
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    container_name: redis
     networks:
       - app-network
 

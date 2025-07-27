@@ -1,10 +1,9 @@
-# Base image
+# Base image for CLI + Swoole (not FPM)
 FROM php:8.3-cli
 
-# Install system packages
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     cron \
-    nginx \
     supervisor \
     curl \
     git \
@@ -17,52 +16,40 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     pkg-config \
     libcurl4-openssl-dev \
-    redis-server \
-    && docker-php-ext-install pdo pdo_mysql zip opcache bcmath pcntl
+    && docker-php-ext-install pdo pdo_mysql zip opcache bcmath pcntl \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Redis extension
-RUN pecl install redis && docker-php-ext-enable redis
-
-# Install Swoole for Laravel Octane
-RUN pecl install swoole-5.1.0 && docker-php-ext-enable swoole
+# Install Redis and Swoole extensions
+RUN pecl install redis swoole-5.1.0 \
+    && docker-php-ext-enable redis swoole
 
 # Install Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
-# Copy Laravel app source code
+# Copy Laravel application
 COPY . /var/www/html
 WORKDIR /var/www/html
 
-# Install Laravel Octane (and set up with Swoole)
-RUN composer require laravel/octane \
-    && php artisan octane:install --server=swoole \
-    && composer install --no-dev --prefer-dist --optimize-autoloader
+# Install Laravel dependencies and Octane
+RUN composer install --no-dev --prefer-dist --optimize-autoloader \
+    && php artisan octane:install --server=swoole
 
-# Fix permissions and ownership (important!)
+# Fix file permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && find /var/www/html -type f -exec chmod 664 {} \; \
-    && find /var/www/html -type d -exec chmod 775 {} \;
+    && chmod -R 775 storage bootstrap/cache
 
-# Copy configs
+# Copy Supervisor and entrypoint configs
 COPY docker/cron/scheduler /etc/cron.d/scheduler
 RUN chmod 0644 /etc/cron.d/scheduler && crontab /etc/cron.d/scheduler
 
 COPY docker/php.ini /usr/local/etc/php/php.ini
 COPY docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
-COPY docker/conf/nginx.dev.conf /etc/nginx/_available/nginx.dev.conf
-COPY docker/conf/nginx.prod.conf /etc/nginx/_available/nginx.prod.conf
 COPY docker/conf/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# Copy entrypoint
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Expose ports
-# EXPOSE 80 443
-
-# Laravel Octane runs on port 8000
+# Laravel Octane uses port 8000
 EXPOSE 8000
 
-# Entrypoint
-# CMD ["entrypoint.sh"]
+# Entrypoint (which starts Supervisor)
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
