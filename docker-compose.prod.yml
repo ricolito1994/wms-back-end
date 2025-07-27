@@ -23,7 +23,7 @@ services:
       - .:/var/www/html
     environment:
       - APP_ENV=production
-      - DB_HOST=wmsdbprod
+      - DB_HOST=wms.cb664q2s0ql0.ap-southeast-2.rds.amazonaws.com
       - DB_PORT=3306
       - REDIS_HOST=127.0.0.1
     restart: always
@@ -39,7 +39,7 @@ services:
       - .:/var/www/html
     environment:
       - APP_ENV=production
-      - DB_HOST=your-db-host
+      - DB_HOST=wms.cb664q2s0ql0.ap-southeast-2.rds.amazonaws.com
       - DB_PORT=3306
       - REDIS_HOST=127.0.0.1
     restart: always
