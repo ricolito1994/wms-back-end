@@ -17,13 +17,18 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     libcurl4-openssl-dev \
     redis-server \
+    zlib1g-dev \
+    libpcre3-dev \
+    php-dev \
     && docker-php-ext-install pdo pdo_mysql zip opcache bcmath pcntl
 
 # Install Redis PHP extension
 RUN pecl install redis && docker-php-ext-enable redis
 
 # Install Laravel Octane + Swoole
-RUN pecl install swoole-5.1.0 && docker-php-ext-enable swoole
+RUN pecl install swoole-5.1.0 \
+    && docker-php-ext-enable swoole \
+    && pecl clear-cache
 
 # Install Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
