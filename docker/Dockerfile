@@ -1,11 +1,18 @@
 FROM php:8.2-fpm
 
-# Install dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git unzip curl libzip-dev libpng-dev libonig-dev \
+    libssl-dev zlib1g-dev g++ make autoconf pkg-config \
     supervisor nginx redis-server cron \
     && docker-php-ext-install zip pdo pdo_mysql bcmath \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Install Swoole for Laravel Octane
+RUN pecl install swoole && docker-php-ext-enable swoole
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
