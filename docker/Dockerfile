@@ -28,7 +28,7 @@ RUN chown -R www-data:www-data /var/www \
 # Install PHP dependencies
 # RUN composer install --optimize-autoloader --no-dev 
 # Require Laravel Octane
-RUN composer require laravel/octane --no-dev \
+RUN composer require laravel/octane \
     && composer install --optimize-autoloader --no-dev
 
 # Copy PHP config
