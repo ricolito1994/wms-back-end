@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git unzip curl libzip-dev libpng-dev libonig-dev \
     libssl-dev zlib1g-dev g++ make autoconf pkg-config \
     supervisor nginx redis-server cron \
-    && docker-php-ext-install zip pdo pdo_mysql bcmath \
+    && docker-php-ext-install zip pdo pdo_mysql bcmath pcntl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
@@ -26,7 +26,10 @@ RUN chown -R www-data:www-data /var/www \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 # Install PHP dependencies
-RUN composer install --optimize-autoloader --no-dev
+RUN composer install --optimize-autoloader --no-dev  \
+    && php artisan octane:install \
+    && php artisan config:cache \
+    && php artisan route:cache
 
 # Copy PHP config
 COPY docker/php.ini /usr/local/etc/php/php.ini
