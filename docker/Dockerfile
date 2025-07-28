@@ -26,7 +26,10 @@ RUN chown -R www-data:www-data /var/www \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 # Install PHP dependencies
-RUN composer install --optimize-autoloader --no-dev 
+# RUN composer install --optimize-autoloader --no-dev 
+# Require Laravel Octane
+RUN composer require laravel/octane --no-dev \
+    && composer install --optimize-autoloader --no-dev
 
 # Copy PHP config
 COPY docker/php.ini /usr/local/etc/php/php.ini
