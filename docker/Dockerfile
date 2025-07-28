@@ -1,10 +1,11 @@
-FROM php:8.3-cli
+FROM php:8.2-fpm
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git unzip curl libzip-dev libpng-dev libonig-dev \
     supervisor nginx redis-server cron \
-    && docker-php-ext-install zip pdo pdo_mysql bcmath
+    && docker-php-ext-install zip pdo pdo_mysql bcmath \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
