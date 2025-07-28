@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     libcurl4-openssl-dev \
     redis-server \
-    && docker-php-ext-install pdo pdo_mysql zip opcache bcmath
+    && docker-php-ext-install pdo pdo_mysql zip opcache bcmath pcntl
 
 # Install Redis PHP extension
 RUN pecl install redis && docker-php-ext-enable redis
