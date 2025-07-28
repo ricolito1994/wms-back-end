@@ -7,19 +7,28 @@ echo "APP_ENV is ${APP_ENV}"
 
 APP_DIR="/var/www"
 
-if [ -f "${APP_DIR}/.env.production.example" ]; then 
-    echo "${APP_DIR}/.env.production.example found";
-else
-    echo "${APP_DIR}/.env.production.example not found";
-fi
-
 # -------------------------------
 # Ensure .env exists
 # -------------------------------
 #if [ ! -f "${APP_DIR}/.env" ]; then
     if [ "${APP_ENV}" = "production" ]; then
+    # sanity checks in production
         echo "📝 .env not found. Copying from .env.production.example..."
+
+        if [ -f "${APP_DIR}/.env.production.example" ]; then 
+            echo "${APP_DIR}/.env.production.example found";
+        else
+            echo "${APP_DIR}/.env.production.example not found";
+        fi
+
         cp "${APP_DIR}/.env.production.example" "${APP_DIR}/.env"
+
+        if [ -f "/etc/nginx/_available/nginx.prod.conf" ]; then 
+            echo "/etc/nginx/_available/nginx.prod.conf found";
+        else
+            echo "/etc/nginx/_available/nginx.prod.conf not found";
+        fi
+
         cp "/etc/nginx/_available/nginx.prod.conf" "/etc/nginx/nginx.conf"
     else
         echo "📝 .env not found. Copying from .env.development.example..."
@@ -30,8 +39,12 @@ fi
  #   echo "✅ .env already exists."
 #fi
 
-cd "${APP_DIR}"
+# 🧪 Load .env manually (only variables used in DB connection needed here)
+export $(grep -v '^#' .env | xargs)
 
+# cd "${APP_DIR}"
+echo "🔍 DB_HOST is $DB_HOST"
+echo "🔍 DB_PORT is $DB_PORT"
 # -------------------------------
 # Fix permissions
 # -------------------------------
