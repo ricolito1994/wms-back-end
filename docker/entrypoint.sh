@@ -14,9 +14,11 @@ APP_DIR="/var/www"
     if [ "${APP_ENV}" = "production" ]; then
         echo "📝 .env not found. Copying from .env.production.example..."
         cp "${APP_DIR}/.env.production.example" "${APP_DIR}/.env"
+        cp "/etc/nginx/_available/nginx.prod.conf" "/etc/nginx/nginx.conf"
     else
         echo "📝 .env not found. Copying from .env.development.example..."
         cp "${APP_DIR}/.env.development.example" "${APP_DIR}/.env"
+        cp "/etc/nginx/_available/nginx.dev.conf" "/etc/nginx/nginx.conf"
     fi
 #else
  #   echo "✅ .env already exists."
