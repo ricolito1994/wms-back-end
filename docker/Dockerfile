@@ -7,12 +7,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     supervisor nginx redis-server cron \
     && docker-php-ext-install zip pdo pdo_mysql bcmath \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
-    
+
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install Swoole for Laravel Octane
-RUN pecl install swoole && docker-php-ext-enable swoole
+RUN pecl install swoole-5.1.1 \
+    && docker-php-ext-enable swoole
 
 # Set working directory
 WORKDIR /var/www
