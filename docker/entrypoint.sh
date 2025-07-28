@@ -7,6 +7,12 @@ echo "APP_ENV is ${APP_ENV}"
 
 APP_DIR="/var/www"
 
+if [ -f "${APP_DIR}/.env.production.example" ]; then 
+    echo "${APP_DIR}/.env.production.example found";
+else
+    echo "${APP_DIR}/.env.production.example not found";
+fi
+
 # -------------------------------
 # Ensure .env exists
 # -------------------------------
