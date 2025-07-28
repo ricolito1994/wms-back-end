@@ -1,56 +1,17 @@
 version: "3.8"
 
 services:
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
+  wms-app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: wms-app
     volumes:
-      - ./docker/conf/nginx.prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - .:/var/www/html:delegated
     ports:
       - "80:80"
       - "443:443"
-    depends_on:
-      - wms-app-1
-      - wms-app-2
-    networks:
-      - app-network
-
-  wms-app-1:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    container_name: wms-app-1
-    volumes:
-      - .:/var/www/html:delegated
     env_file:
       - .env
     restart: unless-stopped
-    networks:
-      - app-network
-    depends_on:
-      - redis
-
-  wms-app-2:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    container_name: wms-app-2
-    volumes:
-      - .:/var/www/html:delegated
-    env_file:
-      - .env
-    restart: unless-stopped
-    networks:
-      - app-network
-    depends_on:
-      - redis
-
-  redis:
-    image: redis:alpine
-    container_name: redis
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
+    tty: true
