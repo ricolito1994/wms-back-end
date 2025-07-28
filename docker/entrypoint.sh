@@ -10,7 +10,7 @@ APP_DIR="/var/www"
 # -------------------------------
 # Ensure .env exists
 # -------------------------------
-if [ ! -f "${APP_DIR}/.env" ]; then
+#if [ ! -f "${APP_DIR}/.env" ]; then
     if [ "${APP_ENV}" = "production" ]; then
         echo "📝 .env not found. Copying from .env.production.example..."
         cp "${APP_DIR}/.env.production.example" "${APP_DIR}/.env"
@@ -18,18 +18,18 @@ if [ ! -f "${APP_DIR}/.env" ]; then
         echo "📝 .env not found. Copying from .env.development.example..."
         cp "${APP_DIR}/.env.development.example" "${APP_DIR}/.env"
     fi
-else
-    echo "✅ .env already exists."
-fi
+#else
+ #   echo "✅ .env already exists."
+#fi
 
 cd "${APP_DIR}"
 
 # -------------------------------
 # Fix permissions
 # -------------------------------
-echo "🔧 Setting correct permissions..."
-chown -R www-data:www-data storage bootstrap/cache
-chmod -R 775 storage bootstrap/cache
+# echo "🔧 Setting correct permissions..."
+# chown -R www-data:www-data storage bootstrap/cache
+# chmod -R 775 storage bootstrap/cache
 
 # -------------------------------
 # Wait for database
@@ -51,6 +51,7 @@ echo "✅ Database is ready!"
 # -------------------------------
 # Laravel setup
 # -------------------------------
+php artisan key:generate
 php artisan config:clear
 php artisan cache:clear
 php artisan config:cache
