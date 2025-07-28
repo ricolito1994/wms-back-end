@@ -41,7 +41,7 @@ COPY docker/cron/scheduler /etc/cron.d/scheduler
 RUN chmod 0644 /etc/cron.d/scheduler && crontab /etc/cron.d/scheduler
 
 # Copy entrypoint
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Expose HTTP and HTTPS ports
