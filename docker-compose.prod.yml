@@ -18,6 +18,7 @@ services:
   wms-scheduler:
     build:
       context: .
+      dockerfile: docker/Dockerfile
     restart: unless-stopped
     volumes:
       - ./:/var/www
