@@ -1,11 +1,22 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  wms:
-    build: .
-    container_name: wms
+  wms-app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: wms-app
+    # volumes:
+    #   - .:/var/www:delegated
     ports:
       - "80:80"
-    volumes:
-      - .:/var/www
-    restart: always
+      - "443:443"
+      - "8000:8000"
+      - "8001:8001"
+      - "8002:8002"
+    # env_file:
+    #  - .env
+    environment:
+      - APP_ENV=production
+    restart: unless-stopped
+    tty: true
