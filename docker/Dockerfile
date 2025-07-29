@@ -4,6 +4,7 @@ FROM php:8.3-fpm
 RUN apt-get update && apt-get install -y \
     git unzip curl libzip-dev libpng-dev libonig-dev libxml2-dev \
     nginx supervisor cron \
+    build-essential pkg-config libssl-dev zlib1g-dev \
     && docker-php-ext-install pdo_mysql zip opcache \
     && pecl install redis swoole \
     && docker-php-ext-enable redis swoole opcache
