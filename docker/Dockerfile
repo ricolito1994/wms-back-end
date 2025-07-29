@@ -1,48 +1,45 @@
-FROM php:8.3-fpm
+FROM php:8.3-fpm-alpine
 
-# Install system dependencies and PHP extensions
-RUN apt-get update && apt-get install -y \
-    git unzip curl libzip-dev libpng-dev libonig-dev libxml2-dev \
-    nginx supervisor cron build-essential pkg-config libssl-dev zlib1g-dev \
-    libcurl4-openssl-dev libpq-dev libpcre3-dev libedit-dev libsqlite3-dev libicu-dev \
-    libbrotli-dev \
-    && docker-php-ext-install pdo_mysql zip opcache \
-    && pecl install swoole-5.1.3 redis \
-    && docker-php-ext-enable swoole redis opcache \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install deps
+RUN apk add --no-cache bash curl git zip unzip supervisor shadow \
+    libzip-dev icu-dev libpng-dev libjpeg-turbo-dev libwebp-dev oniguruma-dev \
+    linux-headers autoconf make g++ openssl
 
-# Set working directory
-WORKDIR /var/www
+# PHP extensions
+RUN docker-php-ext-configure gd --with-jpeg --with-webp \
+    && docker-php-ext-install pdo_mysql zip intl gd \
+    && pecl install redis \
+    && docker-php-ext-enable redis opcache
 
-# Copy Composer
+# Copy php.ini
+# COPY docker/php.prod.ini /usr/local/etc/php/php.ini
+COPY docker/php.prod.ini /usr/local/etc/php/php.prod.ini
+COPY docker/php.dev.ini /usr/local/etc/php/php.dev.ini
+
+# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy PHP config
-COPY docker/php.ini /usr/local/etc/php/php.ini
+# User = wms
+RUN useradd -G www-data,root -u 1000 -d /home/wms wms \
+    && mkdir -p /home/wms/.composer \
+    && chown -R wms:wms /home/wms
 
-# Copy application source
-COPY . .
+WORKDIR /var/www
 
-# Run Composer with optimized settings for production
-RUN composer install --no-dev --optimize-autoloader && \
-    php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
+# Copy only composer files for caching
+COPY --chown=wms:wms composer.json composer.lock ./
+RUN composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader
 
-# Copy runtime configs
-COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY docker/conf/supervisord.conf /etc/supervisor/supervisord.conf
-COPY docker/conf/nginx.prod.conf /etc/nginx/nginx.conf
-COPY docker/cron/scheduler /etc/cron.d/laravel
+# Copy app
+COPY --chown=wms:wms . .
 
-# Set permissions
-RUN chmod +x /usr/local/bin/entrypoint.sh \
-    && chmod 0644 /etc/cron.d/laravel \
-    && crontab /etc/cron.d/laravel
-
-# Expose HTTP port
-EXPOSE 80
+# Supervisor config
+COPY supervisor.conf /etc/supervisord.conf
 
 # Entrypoint
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+USER wms
+
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
