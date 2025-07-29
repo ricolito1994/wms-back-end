@@ -49,8 +49,14 @@ echo "🔍 DB_PORT is $DB_PORT"
 # Fix permissions
 # -------------------------------
 # echo "🔧 Setting correct permissions..."
-# chown -R www-data:www-data storage bootstrap/cache
-# chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache
+
+# Install dependencies (only if missing)
+if [ ! -d "vendor" ]; then
+  echo "Installing Composer dependencies..."
+  composer install --no-dev --optimize-autoloader
+fi
 
 # -------------------------------
 # Wait for database
@@ -72,7 +78,14 @@ echo "✅ Database is ready!"
 # -------------------------------
 # Laravel setup
 # -------------------------------
-php artisan key:generate
+# Only generate APP_KEY if not set
+if grep -q '^APP_KEY=$' "${APP_DIR}/.env"; then
+    echo "🔑 Generating Laravel APP_KEY..."
+    php artisan key:generate --force
+else
+    echo "✅ APP_KEY already exists. Skipping key generation."
+fi
+
 php artisan config:clear
 php artisan cache:clear
 php artisan config:cache
