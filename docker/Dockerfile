@@ -52,6 +52,7 @@ COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Expose HTTP and HTTPS ports
-EXPOSE 80 443
+EXPOSE 80 443 8000 8001 8002
 
-CMD ["/usr/local/bin/entrypoint.sh"]
+# CMD ["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
