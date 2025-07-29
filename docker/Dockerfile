@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y \
     git unzip curl libzip-dev libpng-dev libonig-dev libxml2-dev \
     nginx supervisor cron build-essential pkg-config libssl-dev zlib1g-dev \
     libcurl4-openssl-dev libpq-dev libpcre3-dev libedit-dev libsqlite3-dev libicu-dev \
-    php-dev \
+    libbrotli-dev \
     && docker-php-ext-install pdo_mysql zip opcache \
     && pecl install swoole-5.1.3 redis \
     && docker-php-ext-enable swoole redis opcache \
