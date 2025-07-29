@@ -34,7 +34,7 @@ RUN composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader
 COPY --chown=wms:wms . .
 
 # Supervisor config
-COPY supervisor.conf /etc/supervisord.conf
+COPY docker/supervisord.conf /etc/supervisord.conf
 
 # Entrypoint
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
