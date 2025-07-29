@@ -37,7 +37,7 @@ COPY --chown=wms:wms . .
 COPY docker/supervisord.conf /etc/supervisord.conf
 
 # Entrypoint
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 USER wms
