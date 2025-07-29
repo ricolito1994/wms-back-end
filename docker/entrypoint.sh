@@ -39,6 +39,25 @@ APP_DIR="/var/www"
  #   echo "✅ .env already exists."
 #fi
 
+echo "✅ Verifying Laravel .env loading..."
+
+if php artisan env > /dev/null 2>&1; then
+    echo "✅ Laravel .env loaded successfully: $(php artisan env)"
+else
+    echo "❌ Failed to load .env file. Exiting..."
+    exit 1
+fi
+
+echo "✅ Verifying Nginx status..."
+
+if nginx -t 2>&1 | grep -q 'syntax is ok'; then
+    echo "✅ Nginx configuration syntax is OK."
+else
+    echo "❌ Nginx configuration error:"
+    nginx -t
+    exit 1
+fi
+
 # 🧪 Load .env manually (only variables used in DB connection needed here)
 export $(grep -v '^#' .env | xargs)
 
@@ -108,4 +127,4 @@ fi
 # Start Supervisor
 # -------------------------------
 echo "🚀 Starting Supervisor..."
-exec /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
