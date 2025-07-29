@@ -26,7 +26,7 @@ RUN composer require laravel/octane:^2.0 --no-interaction --no-scripts --no-plug
 # Entrypoint and configs
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY docker/conf/supervisord.conf /etc/supervisor/supervisord.conf
-COPY docker/conf/nginx.conf /etc/nginx/nginx.conf
+COPY docker/conf/nginx.prod.conf /etc/nginx/nginx.conf
 COPY docker/cron/scheduler /etc/cron.d/laravel
 
 # Permissions & cron
