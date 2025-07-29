@@ -1,6 +1,6 @@
 FROM php:8.3-fpm
 
-# Install system dependencies
+# Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
     git unzip curl libzip-dev libpng-dev libonig-dev libxml2-dev \
     nginx supervisor cron build-essential pkg-config libssl-dev zlib1g-dev \
@@ -20,16 +20,16 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Copy PHP config
 COPY docker/php.ini /usr/local/etc/php/php.ini
 
-# Copy application source code
+# Copy application source
 COPY . .
 
-# Install Laravel Octane + optimized production dependencies
-RUN composer require laravel/octane:^2.0 --no-interaction --no-scripts --no-plugins && \
-    php artisan octane:install --server=swoole && \
-    composer install --no-dev --optimize-autoloader && \
-    php artisan config:cache && php artisan route:cache && php artisan view:cache
+# Run Composer with optimized settings for production
+RUN composer install --no-dev --optimize-autoloader && \
+    php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache
 
-# Copy configs
+# Copy runtime configs
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY docker/conf/supervisord.conf /etc/supervisor/supervisord.conf
 COPY docker/conf/nginx.prod.conf /etc/nginx/nginx.conf
@@ -37,8 +37,8 @@ COPY docker/cron/scheduler /etc/cron.d/laravel
 
 # Set permissions
 RUN chmod +x /usr/local/bin/entrypoint.sh \
- && chmod 0644 /etc/cron.d/laravel \
- && crontab /etc/cron.d/laravel
+    && chmod 0644 /etc/cron.d/laravel \
+    && crontab /etc/cron.d/laravel
 
 # Expose HTTP port
 EXPOSE 80
