@@ -1,58 +1,40 @@
 FROM php:8.3-fpm-alpine
 
-# -------------------------------------------------------
-# Install dependencies
-# -------------------------------------------------------
-RUN apk add --no-cache bash curl git zip unzip supervisor shadow busybox-extras \
+# Install deps
+RUN apk add --no-cache bash curl git zip unzip supervisor shadow \
     libzip-dev icu-dev libpng-dev libjpeg-turbo-dev libwebp-dev oniguruma-dev \
     linux-headers autoconf make g++ openssl
 
-# -------------------------------------------------------
-# Install PHP extensions (Redis + Opcache)
-# -------------------------------------------------------
+# PHP extensions
 RUN docker-php-ext-configure gd --with-jpeg --with-webp \
     && docker-php-ext-install pdo_mysql zip intl gd \
     && pecl install redis \
     && docker-php-ext-enable redis opcache
 
-# -------------------------------------------------------
-# Copy final php.ini (PROD baked in)
-# -------------------------------------------------------
+# Copy php.ini
 COPY docker/php.prod.ini /usr/local/etc/php/php.ini
 
-# -------------------------------------------------------
-# Install Composer
-# -------------------------------------------------------
+# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# -------------------------------------------------------
-# Create user
-# -------------------------------------------------------
+# User = wms
 RUN useradd -G www-data,root -u 1000 -d /home/wms wms \
     && mkdir -p /home/wms/.composer \
     && chown -R wms:wms /home/wms
 
 WORKDIR /var/www
 
-# -------------------------------------------------------
-# Copy only composer files for cache
-# -------------------------------------------------------
+# Copy only composer files for caching
 COPY --chown=wms:wms composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader
 
-# -------------------------------------------------------
-# Copy Laravel app
-# -------------------------------------------------------
+# Copy app
 COPY --chown=wms:wms . .
 
-# -------------------------------------------------------
 # Supervisor config
-# -------------------------------------------------------
-COPY docker/supervisor.conf /etc/supervisord.conf
+COPY docker/conf/supervisord.conf /etc/supervisord.conf
 
-# -------------------------------------------------------
 # Entrypoint
-# -------------------------------------------------------
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
