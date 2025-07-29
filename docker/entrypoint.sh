@@ -5,12 +5,12 @@ cd /var/www
 
 echo "⚙️  Environment: $APP_ENV"
 
-echo "COPYING php.ini ...";
-if [ "$APP_ENV" = "production" ]; then
-    cp /usr/local/etc/php/php.prod.ini /usr/local/etc/php/php.ini
-else
-    cp /usr/local/etc/php/php.dev.ini /usr/local/etc/php/php.ini
-fi
+# echo "COPYING php.ini ...";
+# if [ "$APP_ENV" = "production" ]; then
+#    cp /usr/local/etc/php/php.prod.ini /usr/local/etc/php/php.ini
+# else
+#    cp /usr/local/etc/php/php.dev.ini /usr/local/etc/php/php.ini
+# fi
 
 echo "COPYING .env ...";
 # Detect env
