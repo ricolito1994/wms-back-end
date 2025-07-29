@@ -28,8 +28,8 @@ else
     echo "⚠️ $ENV_FILE not found!"
 fi
 
-MAX_TRIES = 3
-NUM_TRIES = 0
+MAX_TRIES=3
+NUM_TRIES=0
 
 # Extract DB_HOST and DB_PORT from .env
 DB_HOST=$(grep DB_HOST /var/www/.env | cut -d '=' -f2)
@@ -38,7 +38,7 @@ DB_PORT=$(grep DB_PORT /var/www/.env | cut -d '=' -f2)
 echo "⏳ Waiting for database ($DB_HOST:$DB_PORT) to be ready..."
 until nc -z "$DB_HOST" "$DB_PORT"; do
     NUM_TRIES=$((NUM_TRIES+1))
-    if [ "$TRIES" -ge "$MAX_TRIES" ]; then
+    if [ "$NUM_TRIES" -ge "$MAX_TRIES" ]; then
         echo "❌ Could not connect to database after $MAX_TRIES attempts, exiting..."
         exit 1
     fi
