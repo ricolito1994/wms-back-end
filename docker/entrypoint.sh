@@ -15,9 +15,9 @@ echo "⚙️  Environment: $APP_ENV"
 echo "COPYING .env ...";
 # Detect env
 if [ "$APP_ENV" = "production" ]; then
-    ENV_FILE="/var/www/.env.prod.example"
+    ENV_FILE="/var/www/.env.production.example"
 else
-    ENV_FILE="/var/www/.env.dev.example"
+    ENV_FILE="/var/www/.env.development.example"
 fi
 
 # 1️⃣ Overwrite .env from correct example file
