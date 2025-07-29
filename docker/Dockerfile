@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
     nginx supervisor cron build-essential pkg-config libssl-dev zlib1g-dev \
     libcurl4-openssl-dev libpq-dev \
     && docker-php-ext-install pdo_mysql zip opcache \
-    && pecl install redis swoole-5.1.3 \
+    && pecl install swoole-5.1.3 --configureoptions="--enable-sockets=yes --enable-openssl=no --enable-brotli=no" \
     && docker-php-ext-enable redis swoole opcache
 
 # Copy PHP config
