@@ -16,14 +16,14 @@ use App\Http\Controllers\WasteManagementController;
 |
 */
 
-Route::get('/', function () {
+/*Route::get('/', function () {
     return view('welcome');
-});
+});*/
 
 Route::group(['prefix' => 'api'], function () {
 
     Route::get('/', function () {
-        return view('api route works!');
+        return response()->json(['message' => 'API route works!']);
     });
  
     Route::group(['prefix' => 'auth'], function () {
