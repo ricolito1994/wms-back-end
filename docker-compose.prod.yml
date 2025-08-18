@@ -36,7 +36,7 @@ services:
     volumes:
       - ./public:/var/www/public
       - ./docker/conf/nginx.prod.conf:/etc/nginx/nginx.conf
-      - ../wms-front-end/dist:/var/www/front-end
+      - ../wms-front-end/dist:/var/www/frontend
 #     - ./docker/conf/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - wms-app
