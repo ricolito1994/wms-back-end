@@ -19,7 +19,10 @@ class AuthController extends Controller
                 return response()->json(['error' => 'invalid_credentials'], 401);
             }
         } catch (JWTException $e) {
-            return response()->json(['error' => 'could_not_create_token'], 500);
+            return response()->json([
+                'error' => 'could_not_create_token',
+                'reason' => $e->getMessage()
+            ], 500);
         }
         
         return $this->respondWithToken(compact('token')['token']);
