@@ -23,7 +23,7 @@ use App\Http\Controllers\WasteManagementController;
 Route::group(['prefix' => 'api'], function () {
 
     Route::get('/', function () {
-        return response()->json(['message' => 'API route works!']);
+        return response()->json(['message' => 'API route!']);
     });
  
     Route::group(['prefix' => 'auth'], function () {
@@ -67,10 +67,17 @@ Route::group(['prefix' => 'api'], function () {
                 Route::get('getAllLandmarks',  'LandmarksController@getAllLandmarks');
             });
             Route::group(['prefix' => 'wastemanagement'], function () { 
-                Route::get('',   'WasteManagementController@index');
-                Route::post('',  'WasteManagementController@store');
+                Route::get('/',   'WasteManagementController@index');
+                Route::post('/',  'WasteManagementController@store');
             });
             Route::group(['prefix' => 'feed'], function () { 
+            });
+            Route::group(['prefix' => 'unitroutes'], function () { 
+                Route::get('/',  'UnitRoutesController@index');
+                Route::get('{routeID}',  'UnitRoutesController@show');
+                Route::post('/',  'UnitRoutesController@save');
+                Route::patch('{routeID}',  'UnitRoutesController@patch');
+                Route::delete('{routeID}', 'UnitRoutesController@delete');
             });
         });
     });
