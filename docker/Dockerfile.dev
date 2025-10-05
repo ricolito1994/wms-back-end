@@ -1,0 +1,46 @@
+FROM php:8.3-fpm-alpine
+
+# Install system dependencies
+RUN apk add --no-cache \
+    bash curl git zip unzip supervisor shadow \
+    libzip-dev icu-dev libpng-dev libjpeg-turbo-dev libwebp-dev oniguruma-dev \
+    linux-headers autoconf make g++ openssl vim
+
+# PHP extensions
+RUN docker-php-ext-configure gd --with-jpeg --with-webp \
+    && docker-php-ext-install pdo_mysql zip intl gd \
+    && pecl install redis \
+    && docker-php-ext-enable redis opcache
+
+# Copy custom php.ini for dev
+COPY docker/php.dev.ini /usr/local/etc/php/conf.d/php-dev.ini
+
+# Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Create dev user (match host UID for file permissions)
+RUN useradd -G www-data,root -u 1000 -d /home/wms wms \
+    && mkdir -p /home/wms/.composer \
+    && chown -R wms:wms /home/wms
+
+WORKDIR /var/www
+
+# Copy composer files first (better caching for deps)
+COPY --chown=wms:wms composer.json composer.lock ./
+
+# Install ALL dependencies (including dev)
+RUN composer install --no-scripts --prefer-dist
+
+# Copy the full app (but in dev, code will be volume-mounted anyway)
+COPY --chown=wms:wms . .
+
+# Supervisor (process manager)
+COPY docker/conf/supervisord.conf /etc/supervisord.conf
+
+# Entrypoint script
+COPY docker/entrypoint.dev.sh /usr/local/bin/entrypoint.dev.sh
+RUN chmod +x /usr/local/bin/entrypoint.dev.sh
+
+USER wms
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.dev.sh"]

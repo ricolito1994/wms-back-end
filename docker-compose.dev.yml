@@ -4,16 +4,56 @@ services:
   wms-app:
     build:
       context: .
-      dockerfile: docker/Dockerfile
-    container_name: wms-app
+      dockerfile: docker/Dockerfile.dev
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www
+      - vendor_data:/var/www/vendor   # ⬅️ vendor handled inside Docker
+    environment:
+      APP_ENV: development
+      SCHEDULER: false
+    networks:
+      - wms
+
+  wms-scheduler:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www
+      - vendor_data:/var/www/vendor   # ⬅️ share vendor volume
+    environment:
+      APP_ENV: development
+      SCHEDULER: true
+    networks:
+      - wms
+
+  nginx:
+    image: nginx:stable-alpine
+    restart: unless-stopped
     ports:
       - "8080:80"
     volumes:
-      - .:/var/www/html
-    environment:
-      - APP_ENV=local
-      - DB_HOST=host.docker.internal
-      - DB_PORT=3306
-      - REDIS_HOST=127.0.0.1
-    restart: always
-    # network_mode: "host"
+      - ./public:/var/www/public
+      - ./docker/conf/nginx.prod.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - wms-app
+    networks:
+      - wms
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - wms
+
+networks:
+  wms:
+    driver: bridge
+
+volumes:
+  redis_data:
+  vendor_data:  
